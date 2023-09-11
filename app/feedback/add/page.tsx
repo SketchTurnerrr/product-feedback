@@ -10,12 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { SelectCategory } from '@/components/select-category';
+import { CreateFeedback } from '@/components/create-feedback-form';
+import AddFeedbackIcon from '@/components/svg/icon-new-feedback';
 
 const AddFeedback = () => {
   return (
-    <div className='container max-w-xl'>
-      <Link href={'/'} className='flex items-center font-bold text-slate-500'>
+    <div className='h-screen pt-24 container max-w-xl'>
+      <Link
+        href={'/'}
+        className='flex mb-16 items-center font-bold text-slate-500'
+      >
         <ChevronLeftIcon
           className='mr-4'
           width={20}
@@ -25,20 +29,12 @@ const AddFeedback = () => {
         Go Back
       </Link>
 
-      <form className='bg-white'>
-        <h1 className='font-bold text-2xl'>Create New Feedback</h1>
+      <div className='bg-white relative max-w-xl p-12 rounded-lg'>
+        <h1 className='font-bold text-2xl py-6 '>Create New Feedback</h1>
+        <AddFeedbackIcon className='absolute -top-7' />
 
-        <div>
-          <label htmlFor='feedbackTitle'>Feedback Title</label>
-          <p>Add a short, descriptive headline</p>
-          <input type='text' />
-        </div>
-        <div>
-          <label htmlFor='feedbackCategory'>Category</label>
-          <p>Choose a category for your feedback</p>
-          <SelectCategory />
-        </div>
-      </form>
+        <CreateFeedback />
+      </div>
     </div>
   );
 };

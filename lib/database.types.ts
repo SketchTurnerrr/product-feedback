@@ -9,10 +9,46 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          feedback_id: string | null
+          id: string
+          profile_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feedback_id?: string | null
+          id?: string
+          profile_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feedback_id?: string | null
+          id?: string
+          profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_feedback_id_fkey"
+            columns: ["feedback_id"]
+            referencedRelation: "product-feedback-requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_profile_id_fkey"
+            columns: ["profile_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       "product-feedback-requests": {
         Row: {
           category: string | null
-          comments: Json | null
           created_at: string
           detail: string | null
           downvotes: number | null
@@ -24,7 +60,6 @@ export interface Database {
         }
         Insert: {
           category?: string | null
-          comments?: Json | null
           created_at?: string
           detail?: string | null
           downvotes?: number | null
@@ -36,7 +71,6 @@ export interface Database {
         }
         Update: {
           category?: string | null
-          comments?: Json | null
           created_at?: string
           detail?: string | null
           downvotes?: number | null
@@ -76,6 +110,40 @@ export interface Database {
             foreignKeyName: "profiles_id_fkey"
             columns: ["id"]
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      upvotes: {
+        Row: {
+          created_at: string
+          feedback_id: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_id: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_id?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "upvotes_feedback_id_fkey"
+            columns: ["feedback_id"]
+            referencedRelation: "product-feedback-requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "upvotes_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
         ]
