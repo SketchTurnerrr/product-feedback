@@ -3,13 +3,13 @@ import { CreateFeedback } from './create-feedback-form';
 import { Button } from './ui/button';
 import Bulb from './svg/bulb';
 
-export const Navbar = () => {
+export const Navbar = ({ suggestionsCount }: { suggestionsCount: number }) => {
   return (
     <div className='flex justify-between bg-slate-700 text-slate-50 items-center p-4 rounded-lg mb-6'>
       <div className='flex gap-4 items-center'>
         <Bulb />
         <h3 className='home-right-nav-suggestions font-bold text-lg'>
-          7 Suggestions
+          {suggestionsCount} Suggestions
         </h3>
         <div className='home-right-nav-dropdown-outer '>
           <button className='home-right-nav-dropdown-btn'>

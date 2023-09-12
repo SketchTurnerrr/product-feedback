@@ -65,7 +65,7 @@ export function CreateFeedback() {
         user_id: user.id,
       });
     }
-    // console.log(values);
+
     router.push('/');
   }
 
@@ -107,11 +107,11 @@ export function CreateFeedback() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value='Feature'>Feature</SelectItem>
-                  <SelectItem value='UI'>UI</SelectItem>
-                  <SelectItem value='UX'>UX</SelectItem>
-                  <SelectItem value='Enhancement'>Enhancement</SelectItem>
-                  <SelectItem value='Bug'>Bug</SelectItem>
+                  <SelectItem value='feature'>Feature</SelectItem>
+                  <SelectItem value='ui'>UI</SelectItem>
+                  <SelectItem value='ux'>UX</SelectItem>
+                  <SelectItem value='enhancement'>Enhancement</SelectItem>
+                  <SelectItem value='bug'>Bug</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

@@ -2,11 +2,16 @@
 
 import { ChevronUpIcon } from '@radix-ui/react-icons';
 import { Button } from './ui/button';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  Session,
+  createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 
 export const Upvotes = ({ pfr }: { pfr: PfrType }) => {
   const router = useRouter();
+
+  // I'm so sorry, this is so retarded
 
   const handleUpvote = async () => {
     const supabase = createClientComponentClient<Database>();

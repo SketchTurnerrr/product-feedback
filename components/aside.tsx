@@ -1,6 +1,6 @@
 import { Filter } from './feedback-filter';
 
-export const Aside = () => {
+export const Aside = ({ children }: { children: React.ReactNode }) => {
   return (
     <section className='space-y-4'>
       <div className='pt-16 px-6 pb-4 bg-gradient-to-r from-purple-500 to-blue-600 rounded-lg'>
@@ -10,7 +10,7 @@ export const Aside = () => {
         </div>
       </div>
 
-      <Filter />
+      {children}
 
       <div className='bg-white p-6 rounded-lg'>
         <header className='flex justify-between mb-4'>
