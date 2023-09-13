@@ -8,10 +8,12 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import noFeedback from '../assets/images/no-feedback.png';
+import { useStore } from '@/app/zustand/store';
 
-export const Pfr = ({ pfr }: { pfr: PfrType[] }) => {
+export const Feedbacks = ({ feedbacks }: { feedbacks: PfrType[] }) => {
   const router = useRouter();
   const supabase = createClientComponentClient<Database>();
+  const order = useStore((state) => state.order);
 
   useEffect(() => {
     const channel = supabase
@@ -34,7 +36,7 @@ export const Pfr = ({ pfr }: { pfr: PfrType[] }) => {
     };
   }, [supabase, router]);
 
-  if (pfr.length === 0) {
+  if (feedbacks.length === 0) {
     return (
       <div className='grid place-items-center h-full p-20 space-y-4 bg-white rounded-lg'>
         <Image
@@ -53,28 +55,46 @@ export const Pfr = ({ pfr }: { pfr: PfrType[] }) => {
     );
   }
 
-  return pfr.map((item) => (
+  const sortedFeedbacks = feedbacks.sort((a, b) => {
+    const aComments = a.comments?.length ?? 0;
+    const bComments = b.comments?.length ?? 0;
+
+    switch (order) {
+      case 'most_upvotes':
+        return b.upvotes - a.upvotes;
+      case 'least_upvotes':
+        return a.upvotes - b.upvotes;
+      case 'most_comments':
+        return bComments - aComments;
+      case 'least_comments':
+        return aComments - bComments;
+      default:
+        return 0;
+    }
+  });
+
+  return sortedFeedbacks?.map((feedback) => (
     <div
-      key={item.id}
-      className='flex bg-white items-center justify-center rounded-lg p-6'
+      key={feedback.id}
+      className='flex bg-white feedbacks-center justify-center rounded-lg p-6'
     >
-      <Upvotes pfr={item} />
-      <Link className='w-full' href={`/feedback/${item.id}`}>
+      <Upvotes pfr={feedback} />
+      <Link className='w-full' href={`/feedback/${feedback.id}`}>
         <div className='mx-12 w-full'>
           <h1 className='font-bold text-lg hover:text-indigo-500'>
-            {item.title}
+            {feedback.title}
           </h1>
 
-          <p className='text-slate-500 mb-4'>{item.detail}</p>
+          <p className='text-slate-500 mb-4'>{feedback.detail}</p>
           <Button className='text-[13px] capitalize h-6 p-2 bg-slate-200 hover:bg-slate-300 text-blue-800'>
-            {item.category}
+            {feedback.category}
           </Button>
         </div>
       </Link>
 
       <div className='flex gap-2'>
         <ChatBubbleIcon width={22} height={22} />
-        <p>{item.comments.length}</p>
+        <p>{feedback.comments.length}</p>
       </div>
     </div>
   ));

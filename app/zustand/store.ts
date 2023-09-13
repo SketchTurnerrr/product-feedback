@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
-interface Filter {
-  category: string;
-  setCategory: (to: string) => void;
+interface Order {
+  order: string;
+  setOrder: (by: string) => void;
 }
 
-export const useStore = create<Filter>()((set) => ({
-  category: 'all',
-  setCategory: (to) => set(() => ({ category: to })),
+export const useStore = create<Order>()((set) => ({
+  order: 'most_upvotes',
+  setOrder: (by) => set(() => ({ order: by })),
 }));

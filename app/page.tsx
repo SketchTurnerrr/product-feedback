@@ -1,13 +1,8 @@
 import { AuthBtnServer } from '@/components/auth-btn-server';
-import { Button } from '@/components/ui/button';
-import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import Image from 'next/image';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Upvotes } from '@/components/upvotes';
-import { Pfr } from '@/components/product-feedback-requests';
+import { Feedbacks } from '@/components/feedbacks';
 import { Navbar } from '@/components/navbar';
 import { Aside } from '@/components/aside';
 import { Filter } from '@/components/feedback-filter';
@@ -36,7 +31,7 @@ export default async function Home({
 
   const { data, error } = await query;
 
-  const pfr =
+  const feedbacks =
     data?.map((feedback) => ({
       ...feedback,
       user_has_upvoted: !!feedback.upvotes.find(
@@ -57,7 +52,7 @@ export default async function Home({
         <Navbar suggestionsCount={data?.length || 0} />
 
         <section className='space-y-3'>
-          <Pfr pfr={pfr} />
+          <Feedbacks feedbacks={feedbacks} />
         </section>
 
         {/* <AuthBtnServer /> */}
