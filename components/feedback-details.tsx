@@ -121,7 +121,9 @@ export const FeedbackDetails = ({
 
                 <p className='text-slate-500 mb-4'>{feedback.detail}</p>
                 <Button className='text-[13px] capitalize h-6 p-2 bg-slate-200 hover:bg-slate-300 text-blue-800'>
-                  {feedback.category}
+                  {feedback.category === 'ui' || feedback.category === 'ux'
+                    ? feedback.category.toUpperCase()
+                    : feedback.category}
                 </Button>
               </div>
             </Link>
