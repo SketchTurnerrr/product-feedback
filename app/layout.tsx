@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Jost } from 'next/font/google';
+export const dynamic = 'force-dynamic'; // this line is for the build to work :/
 
 const jost = Jost({ subsets: ['latin'] });
 

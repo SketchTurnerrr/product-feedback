@@ -32,7 +32,9 @@ const EditFeedback = async ({ params }: { params: { id: string } }) => {
       </Link>
 
       <div className='bg-white relative max-w-xl p-12 rounded-lg'>
-        <h1 className='font-bold text-2xl py-6 '>Editing '{data?.title}'</h1>
+        <h1 className='font-bold text-2xl py-6 '>
+          Editing &quot;{data?.title}&quot;
+        </h1>
         <EditFeedbackIcon className='absolute -top-5' />
         <FeedbackForm
           edit={true}
