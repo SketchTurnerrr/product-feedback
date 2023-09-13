@@ -41,16 +41,12 @@ export default async function Home({
       upvotes: feedback.upvotes.length,
     })) ?? [];
 
+  // console.log(' session:', session);
+
   return (
     <div>
       <main className='relative bg-gradient-to-r container grid md:grid-cols-[255px_minmax(0,_1fr)]  min-h-screen  gap-6 p-24 '>
-        {session ? (
-          <UserUI />
-        ) : (
-          <div className='absolute top-5 right-0 p-4'>
-            <AuthBtnServer />
-          </div>
-        )}
+        {session && <UserUI user={session} />}
         <Aside>
           <Filter params={searchParams} />
         </Aside>

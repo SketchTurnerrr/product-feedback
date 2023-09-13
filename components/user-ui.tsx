@@ -7,23 +7,29 @@ import {
 } from '@/components/ui/popover';
 
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  Session,
+  createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 
-export const UserUI = () => {
+export const UserUI = ({ user }: { user: Session }) => {
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
   const handleSignout = async () => {
     await supabase.auth.signOut();
     router.refresh();
   };
+
+  const src = user.user.user_metadata.avatar_url;
+  console.log('user :', user);
   return (
     <div className='top-5 right-0 p-4 absolute'>
       <Popover>
         <PopoverTrigger>
           <Avatar>
-            <AvatarImage src='https://github.com/shadcn.png' />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={src} />
+            <AvatarFallback>FB</AvatarFallback>
           </Avatar>
         </PopoverTrigger>
         <PopoverContent
