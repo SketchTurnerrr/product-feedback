@@ -34,13 +34,24 @@ const formSchema = z.object({
   feedbackDetail: z.string(),
 });
 
-export function CreateFeedback() {
+export function FeedbackForm({
+  edit,
+  data,
+}: {
+  edit: boolean;
+  data: {
+    id: string;
+    category: string | null;
+    feedbackTitle: string | null;
+    feedbackDetail: string | null;
+  } | null;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: '',
-      feedbackTitle: '',
-      feedbackDetail: '',
+      category: data?.category!,
+      feedbackTitle: data?.feedbackTitle!,
+      feedbackDetail: data?.feedbackDetail!,
     },
   });
 
@@ -58,12 +69,25 @@ export function CreateFeedback() {
     } = await supabase.auth.getUser();
 
     if (user) {
-      await supabase.from('product-feedback-requests').insert({
-        title: fbTitle,
-        detail: fbDetail,
-        category: fbCategory,
-        user_id: user.id,
-      });
+      const query = edit
+        ? supabase
+            .from('product-feedback-requests')
+            .update({
+              title: fbTitle,
+              detail: fbDetail,
+              category: fbCategory,
+              user_id: user.id,
+            })
+            //@ts-ignore
+            .eq('id', data.id)
+        : supabase.from('product-feedback-requests').insert({
+            title: fbTitle,
+            detail: fbDetail,
+            category: fbCategory,
+            user_id: user.id,
+          });
+
+      await query;
     }
 
     router.push('/');
@@ -103,7 +127,7 @@ export function CreateFeedback() {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder='Select a verified email to display' />
+                    <SelectValue defaultValue={'feature'} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -139,7 +163,7 @@ export function CreateFeedback() {
           className='float-right bg-purple-600 hover:bg-purple-500'
           type='submit'
         >
-          Add Feedback
+          {edit ? 'Save Changes' : 'Add Feedback'}
         </Button>
         <Button className='float-right mr-5' type='submit'>
           <Link href={'/'}>Cancel</Link>

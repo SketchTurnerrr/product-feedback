@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { CreateFeedback } from './create-feedback-form';
 import { Button } from './ui/button';
 import Bulb from './svg/bulb';
 import { FeedbackSort } from './feedback-sort';

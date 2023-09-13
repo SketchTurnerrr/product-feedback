@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CreateFeedback } from '@/components/create-feedback-form';
+import { FeedbackForm } from '@/components/feedback-form';
 import AddFeedbackIcon from '@/components/svg/icon-new-feedback';
 
 const AddFeedback = () => {
@@ -33,7 +33,7 @@ const AddFeedback = () => {
         <h1 className='font-bold text-2xl py-6 '>Create New Feedback</h1>
         <AddFeedbackIcon className='absolute -top-7' />
 
-        <CreateFeedback />
+        <FeedbackForm edit={false} data={null} />
       </div>
     </div>
   );

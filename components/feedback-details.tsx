@@ -29,6 +29,9 @@ export const FeedbackDetails = ({
   const supabase = createClientComponentClient<Database>();
   const [content, setContent] = useState<string>();
 
+  console.log('session?.user.id :', session?.user.id);
+  console.log('feedback_id :');
+
   const handleChange = (e: { target: { value: string } }) => {
     if (e.target.value === '') {
       setCharsLeft(455);
@@ -83,18 +86,28 @@ export const FeedbackDetails = ({
 
   return (
     <div className='container max-w-3xl mt-20'>
-      <Link
-        href={'/'}
-        className='flex mb-16 items-center font-bold text-slate-500'
-      >
-        <ChevronLeftIcon
-          className='mr-4'
-          width={20}
-          height={20}
-          stroke='#4661E6'
-        />{' '}
-        Go Back
-      </Link>
+      <div className='flex mb-8 items-center justify-between'>
+        <Link
+          href={'/'}
+          className='flex   items-center font-bold text-slate-500'
+        >
+          <ChevronLeftIcon
+            className='mr-4'
+            width={20}
+            height={20}
+            stroke='#4661E6'
+          />{' '}
+          Go Back
+        </Link>
+
+        {feedback.user_id === session?.user.id && (
+          <Link href={`edit/${feedback_id}`}>
+            <Button className='bg-blue-500 hover:bg-blue-400'>
+              Edit Feedback
+            </Button>
+          </Link>
+        )}
+      </div>
 
       {feedback && (
         <div>
