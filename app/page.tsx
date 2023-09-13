@@ -6,6 +6,7 @@ import { Feedbacks } from '@/components/feedbacks';
 import { Navbar } from '@/components/navbar';
 import { Aside } from '@/components/aside';
 import { Filter } from '@/components/feedback-filter';
+import { UserUI } from '@/components/user-ui';
 
 export default async function Home({
   searchParams,
@@ -40,23 +41,27 @@ export default async function Home({
       upvotes: feedback.upvotes.length,
     })) ?? [];
 
-  if (!session) {
-    redirect('signin');
-  }
   return (
-    <main className='bg-gradient-to-r container  grid  md:grid-cols-[255px_minmax(0,_1fr)]  min-h-screen  gap-6 p-24 '>
-      <Aside>
-        <Filter params={searchParams} />
-      </Aside>
-      <div>
-        <Navbar suggestionsCount={data?.length || 0} />
+    <div>
+      <main className='relative bg-gradient-to-r container grid md:grid-cols-[255px_minmax(0,_1fr)]  min-h-screen  gap-6 p-24 '>
+        {session ? (
+          <UserUI />
+        ) : (
+          <div className='absolute top-5 right-0 p-4'>
+            <AuthBtnServer />
+          </div>
+        )}
+        <Aside>
+          <Filter params={searchParams} />
+        </Aside>
+        <div>
+          <Navbar session={session} suggestionsCount={data?.length || 0} />
 
-        <section className='space-y-3'>
-          <Feedbacks feedbacks={feedbacks} />
-        </section>
-
-        {/* <AuthBtnServer /> */}
-      </div>
-    </main>
+          <section className='space-y-3'>
+            <Feedbacks feedbacks={feedbacks} />
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

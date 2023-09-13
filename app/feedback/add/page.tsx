@@ -12,8 +12,15 @@ import {
 } from '@/components/ui/select';
 import { FeedbackForm } from '@/components/feedback-form';
 import AddFeedbackIcon from '@/components/svg/icon-new-feedback';
+import { cookies } from 'next/headers';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+const AddFeedback = async () => {
+  const supabase = createServerComponentClient<Database>({ cookies });
 
-const AddFeedback = () => {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   return (
     <div className='h-screen pt-24 container max-w-xl'>
       <Link
@@ -33,7 +40,7 @@ const AddFeedback = () => {
         <h1 className='font-bold text-2xl py-6 '>Create New Feedback</h1>
         <AddFeedbackIcon className='absolute -top-7' />
 
-        <FeedbackForm edit={false} data={null} />
+        <FeedbackForm session={session} edit={false} data={null} />
       </div>
     </div>
   );

@@ -24,8 +24,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  createClientComponentClient,
+  Session,
+} from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -37,6 +41,7 @@ const formSchema = z.object({
 export function FeedbackForm({
   edit,
   data,
+  session,
 }: {
   edit: boolean;
   data: {
@@ -45,6 +50,7 @@ export function FeedbackForm({
     feedbackTitle: string | null;
     feedbackDetail: string | null;
   } | null;
+  session: Session | null;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -91,6 +97,10 @@ export function FeedbackForm({
     }
 
     router.push('/');
+  }
+
+  if (!session) {
+    redirect('/');
   }
 
   return (

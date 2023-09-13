@@ -10,7 +10,6 @@ import {
 import Link from 'next/link';
 import { ChatBubbleIcon, ChevronLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
-import { Upvotes } from './upvotes';
 
 type Feedback =
   Database['public']['Tables']['product-feedback-requests']['Row'];
@@ -29,8 +28,8 @@ export const FeedbackDetails = ({
   const supabase = createClientComponentClient<Database>();
   const [content, setContent] = useState<string>();
 
-  console.log('session?.user.id :', session?.user.id);
-  console.log('feedback_id :');
+  // console.log('session?.user.id :', session?.user.id);
+  // // console.log('feedback_id :');
 
   const handleChange = (e: { target: { value: string } }) => {
     if (e.target.value === '') {
@@ -100,7 +99,7 @@ export const FeedbackDetails = ({
           Go Back
         </Link>
 
-        {feedback.user_id === session?.user.id && (
+        {feedback?.user_id === session?.user.id && (
           <Link href={`edit/${feedback_id}`}>
             <Button className='bg-blue-500 hover:bg-blue-400'>
               Edit Feedback
@@ -175,30 +174,33 @@ export const FeedbackDetails = ({
               )}
           </div>
 
-          <div className='p-8 rounded-lg bg-white mb-20'>
-            <h3 className='font-bold text-lg mb-6'>Add comment</h3>
-            <Textarea
-              name='comment input area'
-              maxLength={455}
-              value={content}
-              onChange={handleChange}
-              placeholder='Leave a comment'
-              className='bg-slate-100 h-20 mb-6'
-            />
-            <div className='flex justify-between items-center'>
-              <p>
-                Characters left {charsLeft !== 0 ? 455 - charsLeft : charsLeft}
-              </p>
-              <p>{charsLeft}</p>
-              <Button
-                onClick={addComment}
-                size={'lg'}
-                className='bg-purple-600 hover:bg-purple-500'
-              >
-                Comment
-              </Button>
+          {session && (
+            <div className='p-8 rounded-lg bg-white mb-20'>
+              <h3 className='font-bold text-lg mb-6'>Add comment</h3>
+              <Textarea
+                name='comment input area'
+                maxLength={455}
+                value={content}
+                onChange={handleChange}
+                placeholder='Leave a comment'
+                className='bg-slate-100 h-20 mb-6'
+              />
+              <div className='flex justify-between items-center'>
+                <p>
+                  Characters left{' '}
+                  {charsLeft !== 0 ? 455 - charsLeft : charsLeft}
+                </p>
+                <p>{charsLeft}</p>
+                <Button
+                  onClick={addComment}
+                  size={'lg'}
+                  className='bg-purple-600 hover:bg-purple-500'
+                >
+                  Comment
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

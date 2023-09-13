@@ -3,7 +3,10 @@ import EditFeedbackIcon from '@/components/svg/icon-edit-feedback';
 import { ChevronLeftIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  createServerComponentClient,
+  Session,
+} from '@supabase/auth-helpers-nextjs';
 
 const EditFeedback = async ({ params }: { params: { id: string } }) => {
   const supabase = createServerComponentClient<Database>({ cookies });
@@ -14,7 +17,9 @@ const EditFeedback = async ({ params }: { params: { id: string } }) => {
     .eq('id', params.id)
     .single();
 
-  //   console.log('data :', data);
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   return (
     <div className='h-screen pt-24 container max-w-xl'>
@@ -44,6 +49,7 @@ const EditFeedback = async ({ params }: { params: { id: string } }) => {
             feedbackDetail: data?.detail!,
             feedbackTitle: data?.title!,
           }}
+          session={session}
         />
       </div>
     </div>
