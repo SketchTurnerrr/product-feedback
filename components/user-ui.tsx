@@ -22,7 +22,7 @@ export const UserUI = ({ user }: { user: Session }) => {
   };
 
   const src = user.user.user_metadata.avatar_url;
-  console.log('user :', user);
+
   return (
     <div className='top-5 right-0 p-4 absolute'>
       <Popover>

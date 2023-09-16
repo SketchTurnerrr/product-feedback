@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import {
@@ -11,34 +11,35 @@ import Link from 'next/link';
 import { ChatBubbleIcon, ChevronLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 
-type Feedback =
-  Database['public']['Tables']['product-feedback-requests']['Row'];
-
 export const FeedbackDetails = ({
   feedback_id,
   serverFeedback,
   session,
 }: {
   feedback_id: string;
-  serverFeedback: Feedback;
+  serverFeedback: FeedbackWithComments;
   session: Session | null;
 }) => {
   const [feedback, setFeedback] = useState(serverFeedback);
-  const [charsLeft, setCharsLeft] = useState(455);
   const supabase = createClientComponentClient<Database>();
-  const [content, setContent] = useState<string>();
+  const [content, setContent] = useState<string>('');
+  // const [toggleReply, setToggleReply] = useState(false);
+  const [replyState, setReplyState] = useState<any>({});
 
-  // console.log('session?.user.id :', session?.user.id);
-  // // console.log('feedback_id :');
+  const handleReply = (commentId: string) => {
+    setReplyState((prevState: { [x: string]: boolean }) => ({
+      ...prevState,
+      //@ts-ignore
+      [commentId]: !prevState[commentId],
+    }));
+  };
+
+  const maxLength = 255;
+
+  const characterCount = maxLength - content?.length;
 
   const handleChange = (e: { target: { value: string } }) => {
-    if (e.target.value === '') {
-      setCharsLeft(455);
-    }
-
     setContent(e.target.value);
-
-    setCharsLeft((prev) => prev - e.target.value.length);
   };
 
   useEffect(() => {
@@ -52,9 +53,9 @@ export const FeedbackDetails = ({
         'postgres_changes',
         { event: '*', schema: 'public', table: 'comments' },
         (payload) =>
-          setFeedback((prevFb) => ({
+          setFeedback((prevFb: any) => ({
             ...prevFb,
-            ...(payload.new as Feedback),
+            ...(payload.new as Pfr),
           }))
       )
       .subscribe();
@@ -64,7 +65,7 @@ export const FeedbackDetails = ({
     };
   }, [supabase, setFeedback, feedback]);
 
-  const addComment = async () => {
+  const addComment = async (reply: string | null) => {
     try {
       const {
         data: { user },
@@ -75,6 +76,7 @@ export const FeedbackDetails = ({
           feedback_id: feedback_id,
           profile_id: user.id,
           content: content,
+          parent_comment_id: reply || null,
         });
       }
       setContent('');
@@ -82,6 +84,44 @@ export const FeedbackDetails = ({
       console.log(error);
     }
   };
+
+  const commentMap = feedback.comments.reduce(
+    (
+      acc: {
+        [x: string]: {
+          content: string;
+          profile_id: { avatar_url: string; name: string; id: string };
+          id: Key | null | undefined;
+          replies: FBComment[];
+        };
+      },
+      comment
+    ) => {
+      const { id, parent_comment_id, ...rest } = comment;
+      if (!parent_comment_id) {
+        // This comment has no parent, so it's a root-level comment
+        acc[id] = { id, ...rest, replies: [] };
+      } else {
+        // This comment has a parent, so it's a reply
+        if (!acc[parent_comment_id]) {
+          // Create the parent comment if it doesn't exist yet
+          //@ts-ignore
+          acc[parent_comment_id] = { replies: [] };
+        }
+        // Add this reply to its parent's replies array
+        acc[parent_comment_id].replies.push({
+          id,
+          ...rest,
+          parent_comment_id: null,
+        });
+      }
+      return acc;
+    },
+    {}
+  );
+
+  // Convert the intermediate mapping to an array of root-level comments
+  const organizedComments = Object.values(commentMap);
 
   return (
     <div className='container max-w-3xl mt-20'>
@@ -140,19 +180,12 @@ export const FeedbackDetails = ({
             >{`${feedback?.comments.length} ${
               feedback?.comments.length === 1 ? 'Comment' : 'Comments'
             }`}</h2>
-
-            {feedback &&
-              feedback?.comments.map(
-                (comment: {
-                  id: string;
-                  profile_id: { avatar_url: string; name: string };
-                  content: string;
-                }) => {
-                  return (
-                    <div
-                      key={comment?.id}
-                      className='flex gap-6 w-full mb-4 py-4 '
-                    >
+            {organizedComments?.map(
+              //@ts-ignore
+              (comment: FBComment) => {
+                return (
+                  <div key={comment.id}>
+                    <div className='flex gap-6 w-full mb-4 py-4 '>
                       <Image
                         src={comment.profile_id.avatar_url}
                         width={40}
@@ -160,18 +193,117 @@ export const FeedbackDetails = ({
                         alt='avatar'
                         className='rounded-full self-start'
                       />
-                      <div>
-                        <h4 className='font-bold mb-4'>
-                          {comment.profile_id.name}
-                        </h4>
-                        <p className='text-sm text-slate-500'>
-                          {comment.content}
-                        </p>
+                      <div className='flex items-center justify-between w-full'>
+                        <div>
+                          <div className='mb-4'>
+                            <h4 className='font-bold'>
+                              {comment.profile_id.name}
+                            </h4>
+                            <span className='text-gray-400 text-sm'>
+                              @{comment.profile_id.id.split('-')[0]}
+                            </span>
+                          </div>
+                          <p className='text-sm text-slate-500'>
+                            {comment.content}
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() => handleReply(comment.id)}
+                          className='text-purple-600'
+                          variant={'ghost'}
+                        >
+                          Reply
+                        </Button>
                       </div>
                     </div>
-                  );
-                }
-              )}
+                    {replyState[comment.id] && (
+                      <div className='flex mt-8 items-center gap-4'>
+                        <Textarea
+                          name='reply input area'
+                          maxLength={255}
+                          value={content}
+                          onChange={handleChange}
+                          placeholder='Leave a comment'
+                          className='bg-slate-100 h-20 mb-6'
+                        />
+                        <Button
+                          onClick={() => addComment(comment?.id)}
+                          size={'sm'}
+                          className='bg-purple-600 hover:bg-purple-500'
+                        >
+                          Comment
+                        </Button>
+                      </div>
+                    )}
+                    {comment.replies &&
+                      comment.replies.map(
+                        //@ts-ignore
+                        (reply: FBComment) => {
+                          return (
+                            <div
+                              key={reply.id}
+                              className=' pl-16 gap-6 w-full mb-4 py-4 '
+                            >
+                              <div className='flex items-center justify-between w-full'>
+                                <div className='flex items-center gap-6'>
+                                  <Image
+                                    src={reply.profile_id.avatar_url}
+                                    width={40}
+                                    height={40}
+                                    alt='avatar'
+                                    className='rounded-full self-start'
+                                  />
+                                  <div>
+                                    <div className='mb-4'>
+                                      <h4 className='font-bold'>
+                                        {reply.profile_id.name}
+                                      </h4>
+                                      <span className='text-gray-400 text-sm'>
+                                        @{reply.profile_id.id.split('-')[0]}
+                                      </span>
+                                    </div>
+                                    <p className='text-sm text-slate-500'>
+                                      {reply.content}
+                                    </p>
+                                  </div>
+                                </div>
+                                <Button
+                                  className='text-purple-600'
+                                  name=''
+                                  variant={'ghost'}
+                                  onClick={() => handleReply(reply.id)}
+                                >
+                                  Reply
+                                </Button>
+                              </div>
+
+                              {replyState[reply.id] && (
+                                <div className='flex mt-8 items-center gap-4'>
+                                  <Textarea
+                                    name='reply input area'
+                                    maxLength={255}
+                                    value={content}
+                                    onChange={handleChange}
+                                    placeholder='Leave a comment'
+                                    className='bg-slate-100 h-20 mb-6'
+                                  />
+                                  <Button
+                                    onClick={() => addComment(comment?.id)}
+                                    size={'sm'}
+                                    className='bg-purple-600 hover:bg-purple-500'
+                                  >
+                                    Comment
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
+                      )}
+                  </div>
+                );
+              }
+            )}
           </div>
 
           {session && (
@@ -179,20 +311,20 @@ export const FeedbackDetails = ({
               <h3 className='font-bold text-lg mb-6'>Add comment</h3>
               <Textarea
                 name='comment input area'
-                maxLength={455}
+                maxLength={255}
                 value={content}
                 onChange={handleChange}
                 placeholder='Leave a comment'
                 className='bg-slate-100 h-20 mb-6'
               />
               <div className='flex justify-between items-center'>
-                <p>
-                  Characters left{' '}
-                  {charsLeft !== 0 ? 455 - charsLeft : charsLeft}
+                <p className='text-gray-400'>
+                  {' '}
+                  {characterCount} Characters left
                 </p>
-                <p>{charsLeft}</p>
+
                 <Button
-                  onClick={addComment}
+                  onClick={() => addComment(null)}
                   size={'lg'}
                   className='bg-purple-600 hover:bg-purple-500'
                 >

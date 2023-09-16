@@ -6,9 +6,7 @@ import { useForm } from 'react-hook-form';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -36,6 +34,7 @@ const formSchema = z.object({
   feedbackTitle: z.string().nonempty({ message: "Title can't be empty" }),
   category: z.string().nonempty({ message: 'Please choose a category' }),
   feedbackDetail: z.string(),
+  status: z.string(),
 });
 
 export function FeedbackForm({
@@ -47,6 +46,7 @@ export function FeedbackForm({
   data: {
     id: string;
     category: string | null;
+    status: string | null;
     feedbackTitle: string | null;
     feedbackDetail: string | null;
   } | null;
@@ -55,9 +55,10 @@ export function FeedbackForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: data?.category!,
-      feedbackTitle: data?.feedbackTitle!,
-      feedbackDetail: data?.feedbackDetail!,
+      category: data?.category! || '',
+      status: data?.status! || '',
+      feedbackTitle: data?.feedbackTitle! || '',
+      feedbackDetail: data?.feedbackDetail! || '',
     },
   });
 
@@ -67,6 +68,7 @@ export function FeedbackForm({
     const fbTitle = String(values.feedbackTitle);
     const fbDetail = String(values.feedbackDetail);
     const fbCategory = String(values.category);
+    const fbStatus = String(values.status);
 
     const supabase = createClientComponentClient<Database>();
 
@@ -81,6 +83,7 @@ export function FeedbackForm({
             .update({
               title: fbTitle,
               detail: fbDetail,
+              status: fbStatus,
               category: fbCategory,
               user_id: user.id,
             })
@@ -90,6 +93,7 @@ export function FeedbackForm({
             title: fbTitle,
             detail: fbDetail,
             category: fbCategory,
+            status: 'suggestion',
             user_id: user.id,
           });
 
@@ -152,6 +156,36 @@ export function FeedbackForm({
             </FormItem>
           )}
         />
+        {edit && (
+          <FormField
+            control={form.control}
+            name='status'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='font-bold'>Update status</FormLabel>
+                <FormDescription>Change feedback state</FormDescription>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue defaultValue={'suggestion'} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='suggestion'>Suggestion</SelectItem>
+                    <SelectItem value='planned'>Planned</SelectItem>
+                    <SelectItem value='in_progress'>In-Progress</SelectItem>
+                    <SelectItem value='live'>Live</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         <FormField
           control={form.control}
           name='feedbackDetail'

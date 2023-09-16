@@ -8,7 +8,13 @@ import {
 } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 
-export const Upvotes = ({ pfr }: { pfr: PfrType }) => {
+export const Upvotes = ({
+  pfr,
+  roadmap,
+}: {
+  pfr: PfrType;
+  roadmap: boolean | null;
+}) => {
   const router = useRouter();
 
   // I'm so sorry, this is so retarded
@@ -44,6 +50,18 @@ export const Upvotes = ({ pfr }: { pfr: PfrType }) => {
       router.refresh();
     }
   };
+
+  if (roadmap) {
+    return (
+      <Button
+        className='bg-slate-100 px-2 hover:bg-slate-200'
+        onClick={handleUpvote}
+      >
+        <ChevronUpIcon className='h-5 w-5 text-blue-800' />
+        <b className='text-slate-800 ml-2'>{pfr.upvotes}</b>
+      </Button>
+    );
+  }
 
   return (
     <Button

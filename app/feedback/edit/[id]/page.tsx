@@ -48,6 +48,7 @@ const EditFeedback = async ({ params }: { params: { id: string } }) => {
             category: data?.category!,
             feedbackDetail: data?.detail!,
             feedbackTitle: data?.title!,
+            status: data?.status!,
           }}
           session={session}
         />

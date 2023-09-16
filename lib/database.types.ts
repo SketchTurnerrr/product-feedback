@@ -13,29 +13,39 @@ export interface Database {
         Row: {
           content: string;
           created_at: string;
-          feedback_id: string | null;
+          feedback_id: string;
           id: string;
-          profile_id: string | null;
+          parent_comment_id: string | null;
+          profile_id: string;
+          // replies: string[] | null;
         };
         Insert: {
           content: string;
           created_at?: string;
-          feedback_id?: string | null;
+          feedback_id: string;
           id?: string;
-          profile_id?: string | null;
+          parent_comment_id?: string | null;
+          profile_id: string;
         };
         Update: {
           content?: string;
           created_at?: string;
-          feedback_id?: string | null;
+          feedback_id?: string;
           id?: string;
-          profile_id?: string | null;
+          parent_comment_id?: string | null;
+          profile_id?: string;
         };
         Relationships: [
           {
             foreignKeyName: 'comments_feedback_id_fkey';
             columns: ['feedback_id'];
             referencedRelation: 'product-feedback-requests';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'comments_parent_comment_id_fkey';
+            columns: ['parent_comment_id'];
+            referencedRelation: 'comments';
             referencedColumns: ['id'];
           },
           {
@@ -48,37 +58,30 @@ export interface Database {
       };
       'product-feedback-requests': {
         Row: {
-          comments: any;
           category: string | null;
           created_at: string;
           detail: string | null;
-          downvotes: number | null;
           id: string;
-          title: string | null;
-          update_status: string | null;
-          upvotes: number | null;
+          status: string;
+          title: string;
           user_id: string;
         };
         Insert: {
           category?: string | null;
           created_at?: string;
           detail?: string | null;
-          downvotes?: number | null;
           id?: string;
-          title?: string | null;
-          update_status?: string | null;
-          upvotes?: number | null;
+          status: string;
+          title?: string;
           user_id: string;
         };
         Update: {
           category?: string | null;
           created_at?: string;
           detail?: string | null;
-          downvotes?: number | null;
           id?: string;
-          title?: string | null;
-          update_status?: string | null;
-          upvotes?: number | null;
+          status?: string;
+          title?: string;
           user_id?: string;
         };
         Relationships: [
@@ -119,19 +122,19 @@ export interface Database {
         Row: {
           created_at: string;
           feedback_id: string;
-          id: number;
+          id: string;
           user_id: string;
         };
         Insert: {
           created_at?: string;
           feedback_id: string;
-          id?: number;
+          id?: string;
           user_id: string;
         };
         Update: {
           created_at?: string;
           feedback_id?: string;
-          id?: number;
+          id?: string;
           user_id?: string;
         };
         Relationships: [

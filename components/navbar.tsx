@@ -44,9 +44,11 @@ export const Navbar = ({
           + Add Feedback
         </Button>
       ) : (
-        <Button className='bg-purple-600 hover:bg-purple-500'>
-          <Link href='/feedback/add'>+ Add Feedback</Link>
-        </Button>
+        <Link href='/feedback/add'>
+          <Button className='bg-purple-600 hover:bg-purple-500'>
+            + Add Feedback
+          </Button>
+        </Link>
       )}
     </div>
   );

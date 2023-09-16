@@ -1,6 +1,25 @@
-import { Filter } from './feedback-filter';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import Link from 'next/link';
+import { cookies } from 'next/headers';
 
-export const Aside = ({ children }: { children: React.ReactNode }) => {
+export const Aside = async ({ children }: { children: React.ReactNode }) => {
+  const supabase = createServerComponentClient<Database>({ cookies });
+
+  const { data } = await supabase
+    .from('product-feedback-requests')
+    .select('status')
+    .not('status', 'eq', 'suggestion');
+
+  const statusCounts = ['planned', 'in_progress', 'live'].map((status) => ({
+    status:
+      status === 'planned'
+        ? 'Planned'
+        : status === 'live'
+        ? 'Live'
+        : 'In-Progress',
+    count: data?.filter((item) => item.status === status).length,
+  }));
+
   return (
     <section className='space-y-4'>
       <div className='pt-16 px-6 pb-4 bg-gradient-to-r from-purple-500 to-blue-600 rounded-lg'>
@@ -15,27 +34,33 @@ export const Aside = ({ children }: { children: React.ReactNode }) => {
       <div className='bg-white p-6 rounded-lg'>
         <header className='flex justify-between mb-4'>
           <h3 className='font-bold'>Roadmap</h3>
-          <a href='#'>View</a>
+
+          <Link href={'/roadmap'}>
+            <h3 className='font-bold underline text-blue-500'>View</h3>
+          </Link>
         </header>
         <ul>
-          <li className='flex justify-between'>
-            <div>
-              <p>Planned</p>
-            </div>
-            <p>2</p>
-          </li>
-          <li className='flex justify-between'>
-            <div>
-              <p>In progress</p>
-            </div>
-            <p>2</p>
-          </li>
-          <li className='flex justify-between'>
-            <div>
-              <p>Live</p>
-            </div>
-            <p>2</p>
-          </li>
+          {statusCounts.map((item) => {
+            return (
+              <li className='flex justify-between'>
+                <div className='flex items-center justify-between w-full'>
+                  <div className='flex items-center gap-3'>
+                    <div
+                      className={`h-2 w-2 ${
+                        item.status === 'Planned'
+                          ? 'bg-orange-400'
+                          : item.status === 'Live'
+                          ? 'bg-blue-600'
+                          : 'bg-purple-600'
+                      }  rounded-full`}
+                    ></div>
+                    <p className='text-gray-500'>{item.status}</p>
+                  </div>
+                  <p className='font-bold'>{item.count}</p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

@@ -78,7 +78,7 @@ export const Feedbacks = ({ feedbacks }: { feedbacks: PfrType[] }) => {
       key={feedback.id}
       className='flex bg-white feedbacks-center justify-center rounded-lg p-6'
     >
-      <Upvotes pfr={feedback} />
+      <Upvotes pfr={feedback} roadmap={null} />
       <Link className='w-full' href={`/feedback/${feedback.id}`}>
         <div className='mx-12 w-full'>
           <h1 className='font-bold text-lg hover:text-indigo-500'>

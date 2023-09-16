@@ -1,7 +1,6 @@
 import { AuthBtnServer } from '@/components/auth-btn-server';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import { Feedbacks } from '@/components/feedbacks';
 import { Navbar } from '@/components/navbar';
 import { Aside } from '@/components/aside';
@@ -25,6 +24,7 @@ export default async function Home({
       ? supabase
           .from('product-feedback-requests')
           .select('*, profiles(*), upvotes(user_id), comments(content)')
+          .eq('status', 'suggestion')
       : supabase
           .from('product-feedback-requests')
           .select('*, profiles(*), upvotes(user_id), comments(content)')
