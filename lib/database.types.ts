@@ -17,7 +17,7 @@ export interface Database {
           id: string;
           parent_comment_id: string | null;
           profile_id: string;
-          // replies: string[] | null;
+          replies: string[] | null;
         };
         Insert: {
           content: string;

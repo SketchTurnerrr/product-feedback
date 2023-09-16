@@ -42,7 +42,7 @@ export const Aside = async ({ children }: { children: React.ReactNode }) => {
         <ul>
           {statusCounts.map((item) => {
             return (
-              <li className='flex justify-between'>
+              <li key={item.status} className='flex justify-between'>
                 <div className='flex items-center justify-between w-full'>
                   <div className='flex items-center gap-3'>
                     <div

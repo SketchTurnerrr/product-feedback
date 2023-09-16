@@ -29,8 +29,6 @@ declare global {
   };
 
   type FeedbackWithComments = {
-    user_id: string | undefined;
-
     category: string | null;
     created_at: string;
     detail: string | null;

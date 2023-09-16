@@ -20,7 +20,7 @@ export default async function Feedback({ params }: { params: { id: string } }) {
   return (
     <FeedbackDetails
       feedback_id={params.id}
-      serverFeedback={data!}
+      serverFeedback={data as unknown as FeedbackWithComments}
       session={session}
     />
   );

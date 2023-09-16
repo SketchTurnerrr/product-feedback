@@ -29,7 +29,6 @@ export const FeedbackDetails = ({
   const handleReply = (commentId: string) => {
     setReplyState((prevState: { [x: string]: boolean }) => ({
       ...prevState,
-      //@ts-ignore
       [commentId]: !prevState[commentId],
     }));
   };
@@ -85,43 +84,42 @@ export const FeedbackDetails = ({
     }
   };
 
-  const commentMap = feedback.comments.reduce(
-    (
-      acc: {
-        [x: string]: {
-          content: string;
-          profile_id: { avatar_url: string; name: string; id: string };
-          id: Key | null | undefined;
-          replies: FBComment[];
-        };
-      },
-      comment
-    ) => {
-      const { id, parent_comment_id, ...rest } = comment;
-      if (!parent_comment_id) {
-        // This comment has no parent, so it's a root-level comment
-        acc[id] = { id, ...rest, replies: [] };
-      } else {
-        // This comment has a parent, so it's a reply
-        if (!acc[parent_comment_id]) {
-          // Create the parent comment if it doesn't exist yet
-          //@ts-ignore
-          acc[parent_comment_id] = { replies: [] };
-        }
-        // Add this reply to its parent's replies array
-        acc[parent_comment_id].replies.push({
-          id,
-          ...rest,
-          parent_comment_id: null,
-        });
+  const commentMap = feedback.comments.reduce((acc, comment) => {
+    const { id, parent_comment_id, ...rest } = comment;
+    if (!parent_comment_id) {
+      // This comment has no parent, so it's a root-level comment
+      //@ts-ignore
+      acc[id] = { id, ...rest, replies: [] };
+    } else {
+      // This comment has a parent, so it's a reply
+      //@ts-ignore
+      if (!acc[parent_comment_id]) {
+        // Create the parent comment if it doesn't exist yet
+        //@ts-ignore
+        acc[parent_comment_id] = { replies: [] };
       }
-      return acc;
-    },
-    {}
-  );
+      // Add this reply to its parent's replies array
+      //@ts-ignore
+      acc[parent_comment_id].replies.push({
+        id,
+        ...rest,
+        parent_comment_id: null,
+        replies: null,
+        content: '',
+        created_at: '',
+        feedback_id: '',
+        profile_id: {
+          avatar_url: '',
+          id: '',
+          name: '',
+        },
+      });
+    }
+    return acc;
+  }, {});
 
   // Convert the intermediate mapping to an array of root-level comments
-  const organizedComments = Object.values(commentMap);
+  const organizedComments = Object.values(commentMap as FBComment);
 
   return (
     <div className='container max-w-3xl mt-20'>
