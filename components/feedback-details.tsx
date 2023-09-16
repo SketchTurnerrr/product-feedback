@@ -10,6 +10,7 @@ import {
 import Link from 'next/link';
 import { ChatBubbleIcon, ChevronLeftIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
+import CommentIcon from './svg/comment-icon';
 
 export const FeedbackDetails = ({
   feedback_id,
@@ -165,8 +166,8 @@ export const FeedbackDetails = ({
               </div>
             </Link>
 
-            <div className='flex gap-4'>
-              <ChatBubbleIcon width={22} height={22} />
+            <div className='font-bold items-center flex gap-2'>
+              <CommentIcon />
               {feedback.comments.length}
             </div>
           </div>

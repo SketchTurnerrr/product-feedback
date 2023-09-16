@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import noFeedback from '../assets/images/no-feedback.png';
 import { useStore } from '@/app/zustand/store';
+import CommentIcon from './svg/comment-icon';
 
 export const Feedbacks = ({ feedbacks }: { feedbacks: PfrType[] }) => {
   const router = useRouter();
@@ -94,9 +95,9 @@ export const Feedbacks = ({ feedbacks }: { feedbacks: PfrType[] }) => {
         </div>
       </Link>
 
-      <div className='flex gap-2'>
-        <ChatBubbleIcon width={22} height={22} />
-        <p>{feedback.comments.length}</p>
+      <div className='font-bold items-center flex gap-2'>
+        <CommentIcon />
+        {feedback.comments.length}
       </div>
     </div>
   ));
